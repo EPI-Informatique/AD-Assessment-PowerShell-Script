@@ -13,6 +13,7 @@ All notable changes to this project are documented here.
 - **DNS Health**: lingering DC record detection now compares the forest-wide `_msdcs` zone against the DCs of every domain, so child-domain DCs are no longer flagged as removed.
 - **Account Security**: when fine-grained password policies cannot be read (the Password Settings Container is readable by Domain Admins by default), the report now says they **could not be verified** instead of reporting that none exist ([#2](../../issues/2), thanks @red-erik).
 - **Account Security, DNS Health, Trust Relationships**: corrected the script names used in the help examples ([#2](../../issues/2)).
+- **Group & OU Structure**: the IDFix scan no longer fails in forests whose schema doesn't define some of the scanned attributes (e.g. `mailNickname`, `targetAddress`); those attributes are skipped and listed as not checked.
 
 ### Changed
 - **Topology**: the orphaned-metadata fix text now describes the action instead of listing commands.

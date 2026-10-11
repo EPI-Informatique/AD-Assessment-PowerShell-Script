@@ -253,7 +253,19 @@ $Findings = [System.Collections.ArrayList]::new()
 function Add-Finding { param($O,[string]$Attr,[string]$E,[string]$V,[string]$U)
     [void]$Findings.Add(@{ objectClass=[string]$O._class; name=[string]$O._name; dn=[string]$O.DistinguishedName; attribute=$Attr; error=$E; value=[string]$V; update=[string]$U }) }
 
-$props='cn','displayName','givenName','sn','sAMAccountName','userPrincipalName','mail','mailNickname','proxyAddresses','targetAddress','objectClass','userAccountControl','whenChanged'
+$props=@('cn','displayName','givenName','sn','sAMAccountName','userPrincipalName','mail','mailNickname','proxyAddresses','targetAddress','objectClass','userAccountControl','whenChanged')
+# Some of these attributes (e.g. mailNickname, targetAddress) are not part of every forest's schema.
+# Asking Get-ADObject for an attribute the schema does not define fails the whole query, so request only what exists.
+$SkippedAttrs=@()
+try {
+    $schemaNC=(Get-ADRootDSE -ErrorAction Stop).schemaNamingContext
+    $known=@{}
+    $flt='(|'+(($props | ForEach-Object { "(lDAPDisplayName=$_)" }) -join '')+')'
+    foreach ($a in @(Get-ADObject -SearchBase $schemaNC -LDAPFilter $flt -Properties lDAPDisplayName -ErrorAction Stop)) { $known[[string]$a.lDAPDisplayName.ToLower()]=$true }
+    $SkippedAttrs=@($props | Where-Object { -not $known.ContainsKey($_.ToLower()) })
+    $props=@($props | Where-Object { $known.ContainsKey($_.ToLower()) })
+} catch {}
+if ($SkippedAttrs.Count) { Write-Host "      Attributes not defined in this forest's schema, skipped: $($SkippedAttrs -join ', ')" -ForegroundColor DarkGray }
 $ldap='(|(&(objectCategory=person)(objectClass=user))(objectCategory=group)(objectCategory=contact))'
 $objs=@(Get-ADObject @baseArg -LDAPFilter $ldap -Properties $props -ResultSetSize $null)
 $objByDn=@{}
@@ -423,7 +435,7 @@ try {
         }
         groups=$GroupsOut; ous=$OUsOut; defaultContainers=$DefaultContainers
         idfix=@{
-            scanned=[int]$objs.Count; affected=$idfAffected; shown=[int]$idfRows.Count
+            scanned=[int]$objs.Count; affected=$idfAffected; shown=[int]$idfRows.Count; skippedAttrs=@($SkippedAttrs)
             csvFile=$csvLeaf
             stats=@{ errors=[int]$Findings.Count; affected=$idfAffected
                 character=[int]$idfByType['Character']; format=[int]$idfByType['Format']; tld=[int]$idfByType['TopLevelDomain']
@@ -682,7 +694,7 @@ function build(v){
   } else if(v.t==='idf'){
     r.icon=ic('sync','n'); r.title='Directory sync errors'; r.sub='IDFix-style scan of '+plural(IDX.scanned||0,'object');
     var capped=(IS.errors||0)>IDF.length;
-    r.strip='<div class="strip"><div><b>'+plural(IS.errors||0,'error')+'</b> on '+plural(IS.affected||0,'object')+'. These attributes will block or dirty synchronization to Entra ID / Microsoft 365.'+(capped?' The report includes the first '+IDF.length+'; the full list is in '+esc(IDX.csvFile||'the CSV next to this report')+'.':'')+'</div></div>';
+    r.strip='<div class="strip"><div><b>'+plural(IS.errors||0,'error')+'</b> on '+plural(IS.affected||0,'object')+'. These attributes will block or dirty synchronization to Entra ID / Microsoft 365.'+(capped?' The report includes the first '+IDF.length+'; the full list is in '+esc(IDX.csvFile||'the CSV next to this report')+'.':'')+'</div></div>'+(arr(IDX.skippedAttrs).length?'<div class="strip"><div>Not checked: <b>'+arr(IDX.skippedAttrs).map(esc).join(', ')+'</b> (not defined in this forest\'s schema).</div></div>':'');
     r.cols=[{k:'name',t:'Error type'},{k:'errors',t:'Errors',num:1},{k:'desc',t:'Meaning'}];
     r.rows=ETYPES_USED.map(function(t){return {kind:'etype',ref:t,name:t,errors:etypeCount(t),desc:EHELP[t]};});
   } else if(v.t==='idft'){
