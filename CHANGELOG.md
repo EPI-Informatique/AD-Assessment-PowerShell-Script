@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## [1.7.0] — 2026-10-11
+
+### Added
+- **All-in-one report** (`AD-AuditSuite.ps1`) — runs every module (each in its own PowerShell process, with a per-module timeout) and combines the results into a single interactive report: a dashboard with findings by severity and module, domain controller health, Windows Server 2025 readiness, security events, account, Group Policy, DNS and recovery figures and the top priorities; search across all findings; every module's full report in the same file; and a findings PDF (executive summary, per-area narrative, recommendations, prioritised remediation plan, methodology). Supports `-Modules`/`-Skip`, `-ModuleArguments`, `-TimeoutMinutes`, `-ForestName` (passed to Topology) and `-RebuildFrom` to rebuild the report from an earlier run without re-running the modules.
+
 ## [1.6.0] — 2026-10-07
 
 ### Added

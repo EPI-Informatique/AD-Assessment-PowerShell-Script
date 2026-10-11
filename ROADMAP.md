@@ -6,14 +6,9 @@ This repository is the beginning of a broader **Active Directory Audit Suite**.
 
 Overview, Topology, DC Inventory, Account Security, Trust Relationships, GPO Policy Analyzer, DNS Health, Group & OU Structure, and DC Posture. Additional modules covering other areas of AD health and security are in development and will be added to this repository one by one as they are ready.
 
-## Coming next: the all-in-one report
+## The all-in-one report
 
-The end goal is a single orchestrator script that runs all modules together and produces one comprehensive AD audit report. It is in active development and testing, and will bring:
-
-- A visual dashboard summarising every module (findings by severity and area, DC health, top priorities)
-- Every module's full report in one offline file, one section at a time
-- A findings report exported as a structured PDF, with recommendations and a prioritised remediation plan
-- Isolated module runs, so one failing module never stops the others
+`AD-AuditSuite.ps1` runs all modules together and produces one comprehensive report, with a dashboard, search across every finding, every module's full report, and a findings PDF with recommendations and a prioritised remediation plan. New modules will be added to it as they are published.
 
 ## Design principles
 

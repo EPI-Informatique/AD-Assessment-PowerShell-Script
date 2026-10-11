@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/platform-Windows-0078D6?logo=windows&logoColor=white" alt="Platform: Windows">
   <img src="https://img.shields.io/badge/Active%20Directory-read--only-2ea44f" alt="Read-only">
   <img src="https://img.shields.io/badge/reports-offline%20HTML-blueviolet" alt="Offline HTML reports">
-  <img src="https://img.shields.io/badge/modules-9-orange" alt="9 modules">
+  <img src="https://img.shields.io/badge/modules-9%20%2B%20all--in--one-orange" alt="9 modules + all-in-one">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
 </p>
 <p align="center">
@@ -20,6 +20,32 @@
 > A growing collection of standalone PowerShell scripts that each produce a single, self-contained, interactive HTML report for a different area of Active Directory health and security.
 
 Every module is one script. Run it on a domain-joined machine with the AD PowerShell module, and it discovers the live environment and writes **one HTML file** you can open in any browser — no agents, no install, no internet, no telemetry. Each report is fully offline and portable: drop it in a ticket, attach it to an email, or hand it to an auditor.
+
+Or run them **all at once** with the all-in-one report.
+
+---
+
+## All-in-one report
+
+![AD Audit Suite demo](docs/AD-AuditSuite-demo.gif)
+
+`AD-AuditSuite.ps1` runs every module and combines the results into **one interactive report**:
+
+- **Dashboard** — findings by severity and by module, domain controller health (reachability, replication, time, protocol hardening), Windows Server 2025 readiness, security events, privileged and risky accounts, Group Policy, DNS and recovery figures, and the top priorities across all modules.
+- **Search** across every finding and module from the top bar.
+- **Every module's full report** in the same file, one section at a time.
+- **Findings PDF** in one click (browser print → Save as PDF): an executive summary, each area explained in plain language with its key figures and charts, every finding with its recommendation, a prioritised remediation plan, and a methodology appendix.
+
+Each module runs in its own PowerShell process with a timeout, so one failing module never stops the others; the report shows what completed and why anything did not. Scales automatically to the screen (laptop or large monitor), with light and dark themes.
+
+```powershell
+.\scripts\AD-AuditSuite.ps1                                    # run all modules
+.\scripts\AD-AuditSuite.ps1 -Skip GPOPolicyAnalyzer            # leave a module out
+.\scripts\AD-AuditSuite.ps1 -ModuleArguments @{ DCPosture = '-EventDays 3' }
+.\scripts\AD-AuditSuite.ps1 -RebuildFrom .\AD_AuditSuite_run_20261005_101849   # rebuild the report without re-running anything
+```
+
+Keep all module scripts in the same folder as `AD-AuditSuite.ps1` (or point `-ScriptsPath` at them). Sample report: [`examples/AD-AuditSuite-EXAMPLE.html`](examples/AD-AuditSuite-EXAMPLE.html) (use its **Export findings (PDF)** button to see the PDF).
 
 ---
 
@@ -218,7 +244,7 @@ The [`examples/`](examples/) folder contains a sample HTML report for each modul
 
 - Every module performs **read-only** AD and DC queries. Nothing is modified in Active Directory, Group Policy, or on any domain controller.
 - The generated HTML is **fully self-contained and offline** — no external scripts, no trackers, no network calls when opened.
-- Each script writes **only** its single HTML report to your chosen `-OutputPath`. Nothing else is created or changed.
+- Each module writes **only** its HTML report to your chosen `-OutputPath` (GPO Policy Analyzer also keeps the GPO backups it analyses). The all-in-one report uses a temporary run folder for the module reports and removes it when done, unless `-KeepModuleReports` is used or a module failed (its log is kept for troubleshooting).
 - No credentials, passwords, or tokens are stored or transmitted.
 
 The reports contain infrastructure and security-posture detail (domain/DC names, IPs, group memberships, password policy weaknesses, risky account lists, etc.), so treat them as confidential and store/share them accordingly.
@@ -227,7 +253,7 @@ The reports contain infrastructure and security-posture detail (domain/DC names,
 
 ## Part of a larger project
 
-These nine modules are part of an ongoing Active Directory Audit Suite. Additional modules covering other areas of AD health and security are in development and will be published here one by one. The long-term goal is a single orchestrator that runs all modules together and produces a comprehensive combined report.
+The nine modules and the all-in-one report make up the Active Directory Audit Suite. Additional modules covering other areas of AD health and security are in development and will be published here one by one, and added to the all-in-one report as they land.
 
 Watch or ⭐ the repo to catch new modules as they land.
 
