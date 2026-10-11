@@ -14,7 +14,7 @@
 </p>
 <p align="center">
   <a href="https://mohamed-zeghlache.net"><img src="https://img.shields.io/badge/Website-mohamed--zeghlache.net-0A66C2?logo=googlechrome&logoColor=white" alt="Website"></a>
-  <a href="https://www.linkedin.com/in/mohamed-zeghlache"><img src="https://img.shields.io/badge/LinkedIn-Mohamed%20Zeghlache-0A66C2?logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+  <a href="https://www.linkedin.com/in/mohamed-zeghlache"><img src="https://img.shields.io/badge/LinkedIn-Mohamed%20Zeghlache-0A66C2" alt="LinkedIn"></a>
 </p>
 
 > A growing collection of standalone PowerShell scripts that each produce a single, self-contained, interactive HTML report for a different area of Active Directory health and security.
