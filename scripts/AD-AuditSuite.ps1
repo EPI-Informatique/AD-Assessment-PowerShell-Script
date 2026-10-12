@@ -71,7 +71,7 @@ if ($RebuildFrom) {
 
 Write-Host "AD Audit Suite - all-in-one report" -ForegroundColor Cyan
 Write-Host "==================================" -ForegroundColor Cyan
-Write-Host "build: v13-suite" -ForegroundColor DarkGray
+Write-Host "build: v14-suite" -ForegroundColor DarkGray
 
 # id, name, title, part, script file
 $Catalog = @(
@@ -655,7 +655,7 @@ function show(v){document.querySelectorAll('.toc a').forEach(function(a){a.class
   Object.keys(frames).forEach(function(k){frames[k].style.display=k===v?'block':'none';});
   var ph=document.getElementById('ph');if(ph)ph.parentNode.removeChild(ph);
   if(HTML[v]){if(!frames[v]){var f=document.createElement('iframe');f.className='rep';document.getElementById('repbox').appendChild(f);
-      f.onload=function(){try{var d=f.contentDocument;d.documentElement.setAttribute('data-theme',theme());d.addEventListener('keydown',function(ev){if((ev.ctrlKey||ev.metaKey)&&(ev.key==='b'||ev.key==='B')){ev.preventDefault();toggleSide();}});}catch(x){}};
+      f.onload=function(){try{var d=f.contentDocument;d.documentElement.setAttribute('data-theme',theme());d.addEventListener('keydown',function(ev){if((ev.ctrlKey||ev.metaKey)&&(ev.key==='b'||ev.key==='B')){ev.preventDefault();toggleSide();}});d.addEventListener('click',function(ev){var a=ev.target&&ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href')||'';if(h.charAt(0)==='#'){ev.preventDefault();var id=h.slice(1);try{id=decodeURIComponent(id);}catch(e2){}var t=id?(d.getElementById(id)||d.getElementsByName(id)[0]):null;if(t)t.scrollIntoView({behavior:'smooth',block:'start'});else f.contentWindow.scrollTo({top:0,behavior:'smooth'});}else if(/^https?:/i.test(h)&&!a.target){a.target='_blank';a.rel='noopener';}});}catch(x){}};
       f.srcdoc=HTML[v];frames[v]=f;}frames[v].style.display='block';}
   else{document.getElementById('repbox').insertAdjacentHTML('beforeend','<div class="ph" id="ph"><b>'+e(m.title)+' &mdash; '+(m.status==='skipped'?'skipped':'did not complete')+'</b>'+e(m.error||'')+(m.log?'<pre>'+e(m.log)+'</pre>':'')+'</div>');}
   window.scrollTo(0,0);}
